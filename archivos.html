@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Archivos y cámara</title>
+  <meta name="description" content="Archivos y cámara PWA">
+  <meta name="viewport" content="width=device-width">
+  <meta name="theme-color" content="#fffbfe">
+
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Geolocalización">
+<link rel="apple-touch-icon" href="img/icon-192.png">
+
+  <link rel="icon" sizes="32x32" href="favicon.ico">
+  <link rel="manifest" href="site.webmanifest">
+
+  <!--<script type="module" src="js/lib/registraServiceWorker.js"></script>-->
+  <script type="module" src="js/lib/manejaErrores.js"></script>
+  <script src="ungap/custom-elements.js"></script>
+
+  <script type="module" src="js/lib/custom/md-app-bar.js"></script>
+  <script type="module" src="js/nav-tab-fixed.js"></script>
+
+  <link rel="stylesheet" href="css/estilos.css">
+  <link rel="stylesheet" href="css/transicion_pestanas.css">
+  <link rel="stylesheet" href="css/md-tab.css">
+  <link rel="stylesheet" href="css/material-symbols-outlined.css">
+  <link rel="stylesheet" href="css/md-filled-text-field.css">
+  <link rel="stylesheet" href="css/md-filled-button.css">
+  <link rel="stylesheet" href="css/md-outline-button.css">
+
+  <!--<style>
+    html {
+      color-scheme: light dark;
+    }
+  </style>-->
+
+  <link rel="stylesheet" href="css/theme/light.css">
+<link rel="stylesheet" href="css/theme/dark.css">
+</head>
+
+<body>
+
+  <form id="formulario" novalidate>
+
+    <md-app-bar class="centered" adicional="tab">
+      <h1>Archivos y cámara</h1>
+    </md-app-bar>
+
+    <nav-tab-fixed id="tab"></nav-tab-fixed>
+
+    <section>
+      
+<h1>Archivos y Cámara</h1>
+ <p>
+  <label>
+   Foto de Móvil
+   <input type="file"
+     accept="image/*"
+     capture="camera">
+  </label>
+ </p>
+ <p>
+  <label>
+   Video de Móvil
+   <input type="file"
+     accept="video/*"
+     capture="">
+  </label>
+ </p>
+ <p>
+  <label>
+   Archivo
+   <input type="file">
+  </label>
+ </p>
+
+ <script>
+  const html = document.documentElement;
+
+  function aplicarTema(tema) {
+    html.classList.remove("light", "dark");
+    html.classList.add(tema);
+    localStorage.setItem("tema", tema);
+  }
+
+  function detectarTemaPorHora() {
+    const hora = new Date().getHours();
+    return (hora >= 6 && hora < 19) ? "light" : "dark";
+  }
+
+  function detectarTemaSistema() {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  }
+
+  function iniciarTema() {
+    const temaGuardado = localStorage.getItem("tema");
+
+    if (temaGuardado) {
+      aplicarTema(temaGuardado);
+    } else {
+      // Puedes elegir UNA de estas dos líneas:
+
+      aplicarTema(detectarTemaPorHora());   // 🔵 Por hora
+      // aplicarTema(detectarTemaSistema()); // 🟣 Por sistema
+    }
+  }
+
+  function alternarTema() {
+    const actual = html.classList.contains("dark") ? "dark" : "light";
+    aplicarTema(actual === "dark" ? "light" : "dark");
+  }
+
+  // Inicializa al cargar
+  iniciarTema();
+
+  // Revisa cada minuto si usa modo automático por hora
+  setInterval(() => {
+    if (!localStorage.getItem("tema")) {
+      aplicarTema(detectarTemaPorHora());
+    }
+  }, 60000);
+
+  // Si quieres que reaccione al cambio del sistema:
+  window.matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", e => {
+      if (!localStorage.getItem("tema")) {
+        aplicarTema(e.matches ? "dark" : "light");
+      }
+    });
+
+  // Opcional: puedes llamar alternarTema() desde un botón
+  window.alternarTema = alternarTema;
+</script>
+
+</body>
+</html>

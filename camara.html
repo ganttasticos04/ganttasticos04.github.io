@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>CAMARA</title>
+  <meta name="description" content="Ejemplo de PWA con Formulario">
+  <meta name="viewport" content="width=device-width">
+  <meta name="theme-color" content="#fffbfe">
+
+  
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="CAMARA">
+<link rel="apple-touch-icon" href="img/icon-192.png">
+
+  <link rel="icon" sizes="32x32" href="favicon.ico">
+  <link rel="manifest" href="site.webmanifest">
+
+   <!--<script type="module" src="js/lib/registraServiceWorker.js"></script>-->
+  <script type="module" src="js/lib/manejaErrores.js"></script>
+  <script src="ungap/custom-elements.js"></script>
+
+  <script type="module" src="js/lib/custom/md-app-bar.js"></script>
+  <script type="module" src="js/nav-tab-fixed.js"></script>
+
+  <link rel="stylesheet" href="css/estilos.css">
+  <link rel="stylesheet" href="css/transicion_pestanas.css">
+  <link rel="stylesheet" href="css/md-tab.css">
+  <link rel="stylesheet" href="css/material-symbols-outlined.css">
+  <link rel="stylesheet" href="css/md-filled-text-field.css">
+  <link rel="stylesheet" href="css/md-filled-button.css">
+  <link rel="stylesheet" href="css/md-outline-button.css">
+
+  <!--<style>
+    html {
+      color-scheme: light dark;
+    }
+  </style>-->
+
+  <link rel="stylesheet" href="css/theme/light.css">
+<link rel="stylesheet" href="css/theme/dark.css">
+</head>
+
+<body>
+
+  <form id="formulario" novalidate>
+
+    <md-app-bar class="centered" adicional="tab">
+      <h1>Uso directo de la cámara</h1>
+    </md-app-bar>
+
+    <nav-tab-fixed id="tab"></nav-tab-fixed>
+
+    <h1>Cámara</h1>
+ <p>
+  Para grabar o capturar imagen,
+  cliquea
+  <strong>Inicia</strong>.
+ </p>
+ <p>
+  Para grabar por 5 segundos
+  cliquea
+  <strong>Graba</strong>
+  y cliquea
+  <strong>Para</strong> para
+  detener.
+ </p>
+ <p>
+  Para capturar una imagen de la
+  cámara, cliquea
+  <strong>Captura</strong>.
+ </p>
+ <menu style="display: flex;
+   flex-wrap: wrap;
+   list-style: none;">
+  <li>
+   <button type="button"
+     onclick="inicia()">
+    Inicia
+   </button>
+  </li>
+  <li>
+   <button type="button"
+     onclick="graba()">
+    Graba
+   </button>
+  </li>
+  <li>
+   <button type="button"
+     onclick="para();">
+    Para
+   </button>
+  </li>
+  <li>
+   <button type="button"
+     onclick="captura()">
+    Captura
+   </button>
+  </li>
+ </menu>
+ <section
+   style="display: inline-block;
+     vertical-align: top;">
+  <h1>Preview</h1>
+  <video id="preview" width="160"
+    height="120" autoplay
+    muted></video>
+ </section>
+ <section
+   style="display: inline-block;
+     vertical-align: top;">
+  <h1>Recording</h1>
+  <video id="recording" width="160"
+    height="120" controls></video>
+  <p>
+   <a id="descarga">Descarga</a>
+  </p>
+  <div id="mensajes"></div>
+ </section>
+ <section
+   style="display: inline-block;
+     vertical-align: top;">
+  <h1>Imagen</h1>
+  <canvas id="canvas" width="160"
+    height="120"></canvas>
+  <p>
+   <a id="descargaImagen">
+    Descarga</a>
+  </p>
+ </section>
+ <script>
+  let stream = null
+  let TIEMPO_DE_GRABACION = 5000
+  var context =
+   canvas.getContext('2d')
+  async function inicia() {
+   try {
+    stream = await navigator
+     .mediaDevices.getUserMedia({
+      video: true,
+      audio: true
+     })
+    preview.srcObject = stream
+    descarga.href = stream
+    preview.captureStream =
+     preview.captureStream
+     || preview.mozCaptureStream
+    await new Promise(
+     resolve =>
+      preview.onplaying = resolve)
+   } catch (e) {
+    log(e.message)
+   }
+  }
+  async function graba() {
+   try {
+    const recordedChunks =
+     await grabaClip(stream,
+      TIEMPO_DE_GRABACION)
+    let recordedBlob = new Blob(
+     recordedChunks,
+     { type: "video/webm" })
+    recording.src =
+     URL.createObjectURL(
+      recordedBlob)
+    descarga.href = recording.src
+    descarga.download =
+     "RecordedVideo.webm"
+    log("Exitosamente grabados "
+     + recordedBlob.size
+     + " bytes de "
+     + recordedBlob.type
+     + " media.")
+   } catch (e) {
+    log(e.message)
+   }
+  }
+  function para() {
+   detiene(preview.srcObject)
+  }
+  function captura() {
+   context.drawImage(preview,
+    0, 0, 160, 120)
+   descargaImagen.href =
+    canvas.toDataURL('image/jpeg')
+   descargaImagen.download =
+    "imagen.jpg"
+  }
+  function grabaClip(stream,
+   milisegundos) {
+   let recorder =
+    new MediaRecorder(stream)
+   let data = []
+   recorder.ondataavailable =
+    event => data.push(event.data)
+   recorder.start()
+   log(recorder.state
+    + " durante "
+    + (milisegundos / 1000)
+    + " segundos…")
+   let detenido = new Promise(
+    (resolve, reject) => {
+     recorder.onstop = resolve
+     recorder.onerror =
+      event => reject(event.name)
+    })
+   let grabado =
+    espera(milisegundos)
+     .then(() => recorder.state
+      === "recording"
+      && recorder.stop()
+     )
+   return Promise.all([
+    detenido,
+    grabado
+   ])
+    .then(() => data)
+  }
+  function detiene(stream) {
+   stream.getTracks().forEach(
+    track => track.stop())
+  }
+  function log(msg) {
+   mensajes.innerHTML +=
+    msg + "<br>"
+  }
+  function espera(milisegundos) {
+   return new Promise(
+    resolve => setTimeout(
+     resolve, milisegundos))
+  }
+ </script>
+
+<script>
+  const html = document.documentElement;
+
+  function aplicarTema(tema) {
+    html.classList.remove("light", "dark");
+    html.classList.add(tema);
+    localStorage.setItem("tema", tema);
+  }
+
+  function detectarTemaPorHora() {
+    const hora = new Date().getHours();
+    return (hora >= 6 && hora < 19) ? "light" : "dark";
+  }
+
+  function detectarTemaSistema() {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  }
+
+  function iniciarTema() {
+    const temaGuardado = localStorage.getItem("tema");
+
+    if (temaGuardado) {
+      aplicarTema(temaGuardado);
+    } else {
+      // Puedes elegir UNA de estas dos líneas:
+
+      aplicarTema(detectarTemaPorHora());   // 🔵 Por hora
+      // aplicarTema(detectarTemaSistema()); // 🟣 Por sistema
+    }
+  }
+
+  function alternarTema() {
+    const actual = html.classList.contains("dark") ? "dark" : "light";
+    aplicarTema(actual === "dark" ? "light" : "dark");
+  }
+
+  // Inicializa al cargar
+  iniciarTema();
+
+  // Revisa cada minuto si usa modo automático por hora
+  setInterval(() => {
+    if (!localStorage.getItem("tema")) {
+      aplicarTema(detectarTemaPorHora());
+    }
+  }, 60000);
+
+  // Si quieres que reaccione al cambio del sistema:
+  window.matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", e => {
+      if (!localStorage.getItem("tema")) {
+        aplicarTema(e.matches ? "dark" : "light");
+      }
+    });
+
+  // Opcional: puedes llamar alternarTema() desde un botón
+  window.alternarTema = alternarTema;
+</script>
+
+</body>
+</html>
