@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="light dark">
 
 <head>
   <meta charset="UTF-8">
@@ -32,14 +32,12 @@
   <link rel="stylesheet" href="css/md-filled-button.css">
   <link rel="stylesheet" href="css/md-outline-button.css">
 
-  <!--<style>
+  <style>
     html {
       color-scheme: light dark;
     }
-  </style>-->
+  </style>
 
-<link rel="stylesheet" href="css/theme/light.css">
-<link rel="stylesheet" href="css/theme/dark.css">
 </head>
 
 <body>
@@ -53,21 +51,21 @@
     <nav-tab-fixed id="tab"></nav-tab-fixed>
 
     <section>
+      <md-app-bar class="centered" adicional="tab">
       <h1>GPS</h1>
+      </md-app-bar>
 
-      <p>
-        <label>
+   <p><label class="md-filled-text-field float">
           Latitud
           <output id="latitud"></output>
-        </label>
-      </p>
+      </label></p>
 
       <p>
-        <label>
-          Longitud
+        <label class="md-filled-text-field float">
+            Longitud
           <output id="longitud"></output>
-        </label>
-      </p>
+      </label>
+    </p>
     </section>
 
   </form>
@@ -78,66 +76,5 @@
       longitud.value = p.coords.longitude
     });
   </script>
-
-  <script>
-  const html = document.documentElement;
-
-  function aplicarTema(tema) {
-    html.classList.remove("light", "dark");
-    html.classList.add(tema);
-    localStorage.setItem("tema", tema);
-  }
-
-  function detectarTemaPorHora() {
-    const hora = new Date().getHours();
-    return (hora >= 6 && hora < 19) ? "light" : "dark";
-  }
-
-  function detectarTemaSistema() {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
-  }
-
-  function iniciarTema() {
-    const temaGuardado = localStorage.getItem("tema");
-
-    if (temaGuardado) {
-      aplicarTema(temaGuardado);
-    } else {
-      // Puedes elegir UNA de estas dos líneas:
-
-      aplicarTema(detectarTemaPorHora());   // 🔵 Por hora
-      // aplicarTema(detectarTemaSistema()); // 🟣 Por sistema
-    }
-  }
-
-  function alternarTema() {
-    const actual = html.classList.contains("dark") ? "dark" : "light";
-    aplicarTema(actual === "dark" ? "light" : "dark");
-  }
-
-  // Inicializa al cargar
-  iniciarTema();
-
-  // Revisa cada minuto si usa modo automático por hora
-  setInterval(() => {
-    if (!localStorage.getItem("tema")) {
-      aplicarTema(detectarTemaPorHora());
-    }
-  }, 60000);
-
-  // Si quieres que reaccione al cambio del sistema:
-  window.matchMedia("(prefers-color-scheme: dark)")
-    .addEventListener("change", e => {
-      if (!localStorage.getItem("tema")) {
-        aplicarTema(e.matches ? "dark" : "light");
-      }
-    });
-
-  // Opcional: puedes llamar alternarTema() desde un botón
-  window.alternarTema = alternarTema;
-</script>
-
 </body>
 </html>
