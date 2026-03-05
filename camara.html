@@ -191,8 +191,7 @@
   }
   function grabaClip(stream,
    milisegundos) {
-   let recorder =
-    new MediaRecorder(stream)
+let recorder = new MediaRecorder(stream, { mimeType: "video/webm;codecs=vp8,opus" })
    let data = []
    recorder.ondataavailable =
     event => data.push(event.data)
