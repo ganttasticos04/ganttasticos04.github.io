@@ -22,7 +22,7 @@ form>section {
  box-shadow: none;
 }
 
-head, body{
+body{
  margin: 0;
  font-family: var(--md-sys-typescale-body-large-font);
  font-weight: var(--md-sys-typescale-body-large-weight);
@@ -34,8 +34,6 @@ head, body{
  text-decoration: var(--md-sys-typescale-body-large-text-decoration);
  color: var(--md-sys-color-on-background);
  background-color: var(--md-sys-color-background);
- /* Las siguientes líneas Evita los cambios de apariencia al cargar estilos y
- + custom elements, que son conocidos como Flash Of Unstyled Content (fouc). */
  opacity: 0;
  animation-name: fouc;
  animation-fill-mode: forwards;
@@ -140,4 +138,22 @@ a {
  to {
   opacity: 0;
  }
+
+
+}
+
+form > section{
+ padding-top: calc(64px + 56px);
+}
+
+md-app-bar{
+ position: sticky;
+ top: 0;
+ z-index: 1000;
+}
+
+nav-tab-fixed{
+ position: sticky;
+ top: 64px;
+ z-index: 999;
 }
