@@ -3,9 +3,9 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Geolocalización</title>
+  <title>Geolocalización - PWA Geolocalización y archivos</title>
   <meta name="description" content="Geolocalización PWA">
-  <meta name="viewport" content="width=device-width">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#fffbfe">
 
 <meta name="mobile-web-app-capable" content="yes">
@@ -32,43 +32,37 @@
   <link rel="stylesheet" href="css/md-filled-button.css">
   <link rel="stylesheet" href="css/md-outline-button.css">
 
-  <style>
-    html {
-      color-scheme: light dark;
-    }
-  </style>
-
 </head>
 
 <body>
 
-  <form id="formulario" novalidate>
+  <md-app-bar class="centered" adicional="tab">
+    <h1>Geolocalización</h1>
+  </md-app-bar>
+
+  <nav-tab-fixed id="tab"></nav-tab-fixed>
+
+  <section>
 
     <md-app-bar class="centered" adicional="tab">
-      <h1>Geolocalización</h1>
+      <h1>GPS</h1>
     </md-app-bar>
 
-    <nav-tab-fixed id="tab"></nav-tab-fixed>
-
-    <section>
-      <md-app-bar class="centered" adicional="tab">
-      <h1>GPS</h1>
-      </md-app-bar>
-
-   <p><label class="md-filled-text-field float">
-          Latitud
-          <output id="latitud"></output>
-      </label></p>
-
-      <p>
-        <label class="md-filled-text-field float">
-            Longitud
-          <output id="longitud"></output>
+    <p>
+      <label class="md-filled-text-field float">
+        Latitud
+        <output id="latitud"></output>
       </label>
     </p>
-    </section>
 
-  </form>
+    <p>
+      <label class="md-filled-text-field float">
+        Longitud
+        <output id="longitud"></output>
+      </label>
+    </p>
+
+  </section>
 
   <script>
     navigator.geolocation.watchPosition(p => {
@@ -76,5 +70,6 @@
       longitud.value = p.coords.longitude
     });
   </script>
+
 </body>
 </html>

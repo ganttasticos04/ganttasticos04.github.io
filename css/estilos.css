@@ -22,7 +22,7 @@ form>section {
  box-shadow: none;
 }
 
-body {
+head, body{
  margin: 0;
  font-family: var(--md-sys-typescale-body-large-font);
  font-weight: var(--md-sys-typescale-body-large-weight);
